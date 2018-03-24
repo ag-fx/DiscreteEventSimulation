@@ -1,14 +1,10 @@
 package sk.ikim23.carrental
 
-import sk.ikim23.carrental.core.Core
-import sk.ikim23.carrental.problem.ArrivalEvent
+import sk.ikim23.carrental.core.impl.SimCore
 
 fun main(args: Array<String>) {
-//    val rand = NormRandom(4.0,8.0)
-//    val bw = BufferedWriter(FileWriter(File("input.txt")))
-//    for (i in 1..1_00_000) {
-//        bw.append(rand.nextDouble().toString())
-//        bw.newLine()
-//    }
-//    bw.close()
+    val core = SimCore(daysToSec(1), 20, 20)
+    core.start()
+    println("Avg sys time: ${core.stats.avgSystemTime()}")
+    println(core.stats.avgRoundTime())
 }

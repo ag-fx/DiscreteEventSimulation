@@ -7,7 +7,7 @@ import sk.ikim23.carrental.model.InputModel
 import tornadofx.*
 
 class MainController : Controller() {
-    private val core = Core()
+//    private val core = Core()
     private val xSeries = XYChart.Series<Number, Number>()
     private val ySeries = XYChart.Series<Number, Number>()
     val chartData = listOf(xSeries, ySeries).observable()

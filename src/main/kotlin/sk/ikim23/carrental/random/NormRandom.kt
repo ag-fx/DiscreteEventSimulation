@@ -6,7 +6,7 @@ class NormRandom(val lowerBound: Double, val upperBound: Double, seed: Long = Sy
     private val rand = Random(seed)
 
     fun nextDouble(): Double {
-        return lowerBound + rand.nextGaussian() * upperBound
+        return lowerBound + rand.nextDouble() * (upperBound - lowerBound)
     }
 
     fun setSeed(seed: Long) = rand.setSeed(seed)
