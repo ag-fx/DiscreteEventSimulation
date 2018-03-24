@@ -35,8 +35,8 @@ class SimCore(endTime: Double, val nBuses: Int, nDesks: Int) : Core(endTime, fal
             buses.add(bus)
             addEvent(randArrival(bus))
         }
-        addEvent(CstArrivedOnT1Event(this, rArrivalToT1.nextDouble()))
-//        addEvent(CstArrivedOnT2Event(this, rArrivalToT2.nextDouble()))
+        addEvent(CstArrivedOnT1Event(this))
+        addEvent(CstArrivedOnT2Event(this))
     }
 
     override fun reset() {

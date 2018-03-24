@@ -3,7 +3,7 @@ package sk.ikim23.carrental.core.impl
 import sk.ikim23.carrental.core.Event
 import sk.ikim23.carrental.core.obj.Bus
 
-class CstLeavedBusEvent(val core: SimCore, val bus: Bus, execTime: Double) : Event(core, execTime) {
+class CstLeavedBusEvent(val core: SimCore, val bus: Bus) : Event(core, core.currentTime + core.rLeavedBus.nextDouble()) {
     override fun exec() {
         val customer = bus.remove()
         log("$customer leaved $bus")
@@ -11,15 +11,15 @@ class CstLeavedBusEvent(val core: SimCore, val bus: Bus, execTime: Double) : Eve
         if (!core.serviceDesk.isFull()) {
             val servedCustomer = core.rentalQueue.remove()
             servedCustomer.serviceTime = execTime
-            val serviceEvent = CstGotKeysEvent(core, servedCustomer, core.currentTime + core.rService.nextDouble())
+            val serviceEvent = CstGotKeysEvent(core, servedCustomer)
             core.addEvent(serviceEvent)
         }
         if (!bus.isEmpty()) {
-            val nextLeave = CstLeavedBusEvent(core, bus, core.currentTime + core.rLeavedBus.nextDouble())
+            val nextLeave = CstLeavedBusEvent(core, bus)
             core.addEvent(nextLeave)
         } else {
             if (core.cstWaitingOnTerminal()) {
-                val rideToT1 = BusArrivedToT1Event(core, bus, core.currentTime + core.tTimeToT1)
+                val rideToT1 = BusArrivedToT1Event(core, bus)
                 core.addEvent(rideToT1)
             }
         }

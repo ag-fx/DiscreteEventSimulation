@@ -16,6 +16,8 @@ class Bus(val capacity: Int = 12) {
 
     fun isEmpty() = passengers.isEmpty()
 
+    fun size() = passengers.size
+
     fun add(customer: Customer) {
         if (isFull()) throw IllegalStateException("$this is already full")
         passengers.add(customer)
