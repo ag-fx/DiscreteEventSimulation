@@ -72,7 +72,7 @@ class MainView : View() {
                         textProperty().bind(controller.avgQueueLengthProperty)
                     }
                     separator(Orientation.VERTICAL)
-                    label("Avg. time in system:")
+                    label("Avg. execTime in system:")
                     label {
                         prefWidth = valueWidth
                         textProperty().bind(controller.avgSystemTimeProperty)

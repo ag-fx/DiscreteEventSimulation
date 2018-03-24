@@ -2,13 +2,12 @@ package sk.ikim23.carrental.controller
 
 import javafx.beans.property.SimpleStringProperty
 import javafx.scene.chart.XYChart
-import sk.ikim23.carrental.core.SimCore
+import sk.ikim23.carrental.core.Core
 import sk.ikim23.carrental.model.InputModel
-import sk.ikim23.carrental.random.ExpRandom
 import tornadofx.*
 
 class MainController : Controller() {
-    private val core = SimCore()
+    private val core = Core()
     private val xSeries = XYChart.Series<Number, Number>()
     private val ySeries = XYChart.Series<Number, Number>()
     val chartData = listOf(xSeries, ySeries).observable()
@@ -19,6 +18,6 @@ class MainController : Controller() {
     fun start() {
 //        core.start(24.0 * 60)
 //        println("Queue length: ${core.stats.avgLength()}")
-//        println("System time: ${core.stats.avgSystemTime()}")
+//        println("System execTime: ${core.stats.avgSystemTime()}")
     }
 }
