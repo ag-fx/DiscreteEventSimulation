@@ -8,7 +8,7 @@ class BusLoadsCstOnT2Event(val core: SimCore, val bus: Bus, val customer: Custom
     override fun exec() {
         bus.add(customer)
         log("$customer loaded on $bus")
-        if (!bus.isFull() && core.t2Queue.isNotEmpty()) {
+        if (!bus.isFull() && !core.t2Queue.isEmpty()) {
             // load passenger
             val nextCustomer = core.t2Queue.remove()
             val nextLoad = BusLoadsCstOnT2Event(core, bus, nextCustomer)

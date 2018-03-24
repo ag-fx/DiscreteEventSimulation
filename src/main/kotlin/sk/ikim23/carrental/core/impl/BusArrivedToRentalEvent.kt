@@ -7,17 +7,13 @@ class BusArrivedToRentalEvent(val core: SimCore, val bus: Bus, execTime: Double?
     : Event(core, execTime ?: core.currentTime + core.tTimeToRental) {
     override fun exec() {
         log("$bus arrived to Rental shop")
-        bus.arrival = execTime
         core.stats.take(bus)
-        bus.departure = execTime
         if (!bus.isEmpty()) {
             val nextLeave = CstLeavedBusEvent(core, bus)
             core.addEvent(nextLeave)
-        } else {
-            if (core.cstWaitingOnTerminal()) {
-                val rideToT1 = BusArrivedToT1Event(core, bus)
-                core.addEvent(rideToT1)
-            }
+        } else if (core.customersAreWaiting()) {
+            val rideToT1 = BusArrivedToT1Event(core, bus)
+            core.addEvent(rideToT1)
         }
     }
 }

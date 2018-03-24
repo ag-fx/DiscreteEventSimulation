@@ -7,7 +7,7 @@ import sk.ikim23.carrental.model.InputModel
 import tornadofx.*
 
 class MainController : Controller() {
-//    private val core = Core()
+//    private val manager = Core()
     private val xSeries = XYChart.Series<Number, Number>()
     private val ySeries = XYChart.Series<Number, Number>()
     val chartData = listOf(xSeries, ySeries).observable()
@@ -16,8 +16,8 @@ class MainController : Controller() {
     val avgSystemTimeProperty = SimpleStringProperty(0.toString())
 
     fun start() {
-//        core.start(24.0 * 60)
-//        println("Queue length: ${core.stats.avgLength()}")
-//        println("System execTime: ${core.stats.avgSystemTime()}")
+//        manager.start(24.0 * 60)
+//        println("StatsQueue length: ${manager.stats.avgLength()}")
+//        println("System execTime: ${manager.stats.averageSystemTime()}")
     }
 }

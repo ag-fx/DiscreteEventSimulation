@@ -16,7 +16,7 @@ class MainView : View() {
     val controller: MainController by inject()
 
     init {
-        title = "Shop Queue"
+        title = "Shop StatsQueue"
         root.top {
             vbox {
                 hbox {

@@ -7,7 +7,7 @@ class BusArrivedToT2Event(val core: SimCore, val bus: Bus, execTime: Double? = n
     : Event(core, execTime ?: core.currentTime + core.tTimeToT2) {
     override fun exec() {
         log("$bus arrived to T2")
-        if (!bus.isFull() && core.t2Queue.isNotEmpty()) {
+        if (!bus.isFull() && !core.t2Queue.isEmpty()) {
             // load passenger
             val customer = core.t2Queue.remove()
             val loadCustomer = BusLoadsCstOnT2Event(core, bus, customer)

@@ -10,18 +10,16 @@ class CstLeavedBusEvent(val core: SimCore, val bus: Bus) : Event(core, core.curr
         core.rentalQueue.add(customer)
         if (!core.serviceDesk.isFull()) {
             val servedCustomer = core.rentalQueue.remove()
-            servedCustomer.serviceTime = execTime
+            core.serviceDesk.add(servedCustomer)
             val serviceEvent = CstGotKeysEvent(core, servedCustomer)
             core.addEvent(serviceEvent)
         }
         if (!bus.isEmpty()) {
             val nextLeave = CstLeavedBusEvent(core, bus)
             core.addEvent(nextLeave)
-        } else {
-            if (core.cstWaitingOnTerminal()) {
-                val rideToT1 = BusArrivedToT1Event(core, bus)
-                core.addEvent(rideToT1)
-            }
+        } else if (core.customersAreWaiting()) {
+            val rideToT1 = BusArrivedToT1Event(core, bus)
+            core.addEvent(rideToT1)
         }
     }
 }

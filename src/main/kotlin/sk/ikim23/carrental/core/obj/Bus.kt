@@ -10,13 +10,10 @@ class Bus(val capacity: Int = 12) {
     private val passengers: Queue<Customer> = LinkedList()
     val id = ID++
     var departure = Double.MAX_VALUE
-    var arrival = 0.0
 
     fun isFull() = passengers.size >= capacity
 
     fun isEmpty() = passengers.isEmpty()
-
-    fun size() = passengers.size
 
     fun add(customer: Customer) {
         if (isFull()) throw IllegalStateException("$this is already full")
@@ -25,5 +22,7 @@ class Bus(val capacity: Int = 12) {
 
     fun remove(): Customer = passengers.remove()
 
-    override fun toString() = "Bus(id=$id, size=${passengers.size})"
+    fun usedCapacity() = passengers.size / capacity
+
+    override fun toString() = "Bus(id=$id, usedCapacity=${passengers.size})"
 }

@@ -5,6 +5,7 @@ import sk.ikim23.carrental.core.Event
 import sk.ikim23.carrental.core.obj.Bus
 import sk.ikim23.carrental.core.obj.Customer
 import sk.ikim23.carrental.core.obj.ServiceDesk
+import sk.ikim23.carrental.core.obj.StatsQueue
 import sk.ikim23.carrental.random.ExpRandom
 import sk.ikim23.carrental.random.NormRandom
 import sk.ikim23.carrental.times
@@ -21,13 +22,13 @@ class SimCore(endTime: Double, val nBuses: Int, nDesks: Int) : Core(endTime, fal
     val rLeavedBus = NormRandom(4.0, 12.0)
     val rService = NormRandom(2.0 * 60, 10.0 * 60)
     val buses = LinkedList<Bus>()
-    val t1Queue: Queue<Customer> = LinkedList()
-    val t2Queue: Queue<Customer> = LinkedList()
-    val rentalQueue: Queue<Customer> = LinkedList()
-    val serviceDesk = ServiceDesk(nDesks)
-    val stats = Stats()
+    val t1Queue = StatsQueue<Customer>(this)
+    val t2Queue = StatsQueue<Customer>(this)
+    val rentalQueue = StatsQueue<Customer>(this)
+    val serviceDesk = ServiceDesk(this, nDesks)
+    val stats = Stats(this)
 
-    fun cstWaitingOnTerminal() = hasTime() || t1Queue.isNotEmpty() || t2Queue.isNotEmpty()
+    fun customersAreWaiting() = hasTime() || !t1Queue.isEmpty() || !t2Queue.isEmpty()
 
     override fun init() {
         nBuses.times {

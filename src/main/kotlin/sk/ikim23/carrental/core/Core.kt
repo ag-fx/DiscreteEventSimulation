@@ -2,7 +2,7 @@ package sk.ikim23.carrental.core
 
 import java.util.*
 
-abstract class Core(val endTime: Double, val log: Boolean = false) {
+abstract class Core(val endTime: Double, val log: Boolean = false) : ITimeManager {
     private val eventQueue = PriorityQueue<Event>()
     var currentTime = 0.0
         private set
@@ -10,6 +10,8 @@ abstract class Core(val endTime: Double, val log: Boolean = false) {
     abstract fun init()
 
     abstract fun reset()
+
+    override fun currentTime() = currentTime
 
     fun hasTime() = currentTime <= endTime
 
