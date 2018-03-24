@@ -18,4 +18,6 @@ class ServiceDesk(val manager: ITimeManager, val capacity: Int) {
     }
 
     fun averageSize() = servedCustomers.averageSize()
+
+    fun averageUsage() = averageSize() / capacity
 }
