@@ -3,7 +3,7 @@ package sk.ikim23.carrental.core.impl
 import sk.ikim23.carrental.core.obj.Bus
 import sk.ikim23.carrental.core.obj.Customer
 
-class Stats(val core: SimCore) {
+class Stats(val core: SimCore) : IStats {
     private var nBuses = 0
     private var nCustomers = 0
     private var sumTime = 0.0
@@ -25,21 +25,19 @@ class Stats(val core: SimCore) {
         }
     }
 
-    fun averageSystemTime() = (sumTime / nCustomers) / 60
+    override fun averageSystemTime() = (sumTime / nCustomers) / 60
 
-    fun averageRoundTime() = (sumRoundTime / nBuses) / 60
+    override fun averageRoundTime() = (sumRoundTime / nBuses) / 60
 
-    fun averageBusUsage() = sumBusUsage / nBuses
+    override fun averageBusUsage() = sumBusUsage / nBuses
 
-    fun print() {
-        println("Average user time: ${averageSystemTime()}")
-        println("Average bus round time: ${averageRoundTime()}")
-        println("Average bus usage: ${averageBusUsage()}")
-        println("Average T1 queue: ${core.t1Queue.averageSize()}")
-        println("Average T2 queue: ${core.t2Queue.averageSize()}")
-        println("Average service desk queue: ${core.rentalQueue.averageSize()}")
-        println("Average service desk usage: ${core.serviceDesk.averageUsage()}")
-    }
+    override fun averageT1QueueSize() = core.t1Queue.averageSize()
+
+    override fun averageT2QueueSize() = core.t2Queue.averageSize()
+
+    override fun averageServiceDeskQueueSize() = core.serviceDesk.averageSize()
+
+    override fun averageServiceDeskUsage() = core.serviceDesk.averageUsage()
 
     fun reset() {
         nBuses = 0

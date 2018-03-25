@@ -9,12 +9,12 @@ class ServiceDesk(val manager: ITimeManager, val capacity: Int) {
 
     fun add(customer: Customer) {
         if (isFull()) throw IllegalArgumentException("${javaClass.simpleName} is already full")
-        customer.serviceTime = manager.currentTime()
         servedCustomers.add(customer)
     }
 
     fun remove(customer: Customer) {
         if(!servedCustomers.remove(customer)) throw IllegalStateException("$customer was not found")
+        customer.serviceTime = manager.currentTime()
     }
 
     fun averageSize() = servedCustomers.averageSize()

@@ -11,7 +11,7 @@ import sk.ikim23.carrental.random.NormRandom
 import sk.ikim23.carrental.times
 import java.util.*
 
-class SimCore(endTime: Double, val nBuses: Int, nDesks: Int) : Core(endTime, false) {
+class SimCore(endTime: Double, val nBuses: Int, nDesks: Int, log: Boolean = false) : Core(endTime, log) {
     val tTimeToT1 = calcTravelTime(6.4)
     val tTimeToT2 = calcTravelTime(0.5)
     val tTimeToRental = calcTravelTime(2.5)
