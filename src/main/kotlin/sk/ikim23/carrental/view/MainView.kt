@@ -3,7 +3,8 @@ package sk.ikim23.carrental.view
 import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
-import javafx.scene.chart.NumberAxis
+import javafx.scene.control.Label
+import javafx.scene.text.Font
 import sk.ikim23.carrental.controller.MainController
 import tornadofx.*
 
@@ -16,7 +17,7 @@ class MainView : View() {
     val controller: MainController by inject()
 
     init {
-        title = "Shop StatsQueue"
+        title = "AirCar Rental"
         root.top {
             vbox {
                 hbox {
@@ -26,58 +27,82 @@ class MainView : View() {
                     label("Replications:")
                     textfield {
                         prefWidth = cWidth
-                        textProperty().bindBidirectional(controller.model.replicationsProperty, IntConverter())
-                        disableProperty().bind(controller.model.disableControlsProperty)
+                        textProperty().bindBidirectional(controller.inputModel.nReplications, IntConverter())
+                        disableProperty().bind(controller.inputModel.disableControls)
                     }
-                    label("Customer arrival [min]:")
+                    label("Bus:")
                     textfield {
                         prefWidth = cWidth
-                        textProperty().bindBidirectional(controller.model.arrivalTimeProperty, IntConverter())
-                        disableProperty().bind(controller.model.disableControlsProperty)
+                        textProperty().bindBidirectional(controller.inputModel.nBuses, IntConverter())
+                        disableProperty().bind(controller.inputModel.disableControls)
                     }
-                    label("Service duration [min]:")
+                    label("Employees:")
                     textfield {
                         prefWidth = cWidth
-                        textProperty().bindBidirectional(controller.model.serviceTimeProperty, IntConverter())
-                        disableProperty().bind(controller.model.disableControlsProperty)
+                        textProperty().bindBidirectional(controller.inputModel.nEmployees, IntConverter())
+                        disableProperty().bind(controller.inputModel.disableControls)
                     }
                     button("Start") {
                         prefWidth = cWidth
-                        disableProperty().bind(controller.model.disableControlsProperty)
+                        disableProperty().bind(controller.inputModel.disableControls)
                         setOnAction { controller.start() }
+                    }
+                    button("Pause") {
+                        prefWidth = cWidth
+                    }
+                    button("Stop") {
+                        prefWidth = cWidth
+                    }
+                    label("Speed:")
+                    textfield {
+                        prefWidth = 50.0
+                        textProperty().bindBidirectional(controller.inputModel.speed, IntConverter())
+                    }
+                    slider(0,100) {
+                        valueProperty().bindBidirectional(controller.inputModel.speed)
                     }
                 }
                 separator()
             }
         }
         root.center {
-            linechart("", NumberAxis(), NumberAxis()) {
-                xAxis.animated = false
-                yAxis.animated = false
-                animated = false
-                data = controller.chartData
-            }
-        }
-        root.bottom {
-            vbox {
-                separator()
-                hbox {
-                    padding = cPadding
-                    spacing = cSpacing
-                    alignment = cAlignment
-                    val valueWidth = 120.0
-                    label("Avg. queue length:")
-                    label {
-                        prefWidth = valueWidth
-                        textProperty().bind(controller.avgQueueLengthProperty)
+            hbox {
+                padding = cPadding
+                spacing = cSpacing
+                gridpane {
+                    hgap = cSpacing
+                    vgap = cSpacing
+                    row {
+                        label("Average user time:")
+                        label { textProperty().bind(controller.repModel.averageSystemTime) }
                     }
-                    separator(Orientation.VERTICAL)
-                    label("Avg. execTime in system:")
-                    label {
-                        prefWidth = valueWidth
-                        textProperty().bind(controller.avgSystemTimeProperty)
+                    row {
+                        label("Average bus round time:")
+                        label { textProperty().bind(controller.repModel.averageRoundTime) }
                     }
+                    row {
+                        label("Average bus usage:")
+                        label { textProperty().bind(controller.repModel.averageBusUsage) }
+                    }
+                    row {
+                        label("Average T1 queue:")
+                        label { textProperty().bind(controller.repModel.averageT1QueueSize) }
+                    }
+                    row {
+                        label("Average T2 queue:")
+                        label { textProperty().bind(controller.repModel.averageT2QueueSize) }
+                    }
+                    row {
+                        label("Average service desk queue:")
+                        label { textProperty().bind(controller.repModel.averageServiceDeskQueueSize) }
+                    }
+                    row {
+                        label("Average service desk usage:")
+                        label { textProperty().bind(controller.repModel.averageServiceDeskUsage) }
+                    }
+                    children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
                 }
+                separator(Orientation.VERTICAL)
             }
         }
     }
