@@ -49,9 +49,11 @@ class MainView : View() {
                     }
                     button("Pause") {
                         prefWidth = cWidth
+                        setOnAction { controller.pause() }
                     }
                     button("Stop") {
                         prefWidth = cWidth
+                        setOnAction { controller.stop() }
                     }
                     label("Speed:")
                     textfield {

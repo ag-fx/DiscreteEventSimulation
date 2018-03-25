@@ -39,7 +39,7 @@ class Stats(val core: SimCore) : IStats {
 
     override fun averageServiceDeskUsage() = core.serviceDesk.averageUsage()
 
-    fun reset() {
+    override fun clear() {
         nBuses = 0
         nCustomers = 0
         sumTime = 0.0

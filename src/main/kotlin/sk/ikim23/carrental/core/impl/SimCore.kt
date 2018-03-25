@@ -11,38 +11,56 @@ import sk.ikim23.carrental.random.NormRandom
 import sk.ikim23.carrental.times
 import java.util.*
 
-class SimCore(endTime: Double, val nBuses: Int, nDesks: Int, log: Boolean = false) : Core(endTime, log) {
+class SimCore : Core() {
     val tTimeToT1 = calcTravelTime(6.4)
     val tTimeToT2 = calcTravelTime(0.5)
     val tTimeToRental = calcTravelTime(2.5)
+    // Randoms
     val rArrivalToT1 = ExpRandom(43.0 / (60 * 60))
     val rArrivalToT2 = ExpRandom(19.0 / (60 * 60))
     val rLoadOnT1 = NormRandom(10.0, 14.0)
     val rLoadOnT2 = NormRandom(10.0, 14.0)
     val rLeavedBus = NormRandom(4.0, 12.0)
     val rService = NormRandom(2.0 * 60, 10.0 * 60)
-    val buses = LinkedList<Bus>()
+    // Model objects
     val t1Queue = StatsQueue<Customer>(this)
     val t2Queue = StatsQueue<Customer>(this)
     val rentalQueue = StatsQueue<Customer>(this)
-    val serviceDesk = ServiceDesk(this, nDesks)
+    lateinit var serviceDesk: ServiceDesk
+    var nBuses = 0
     val stats = Stats(this)
 
     fun customersAreWaiting() = hasTime() || !t1Queue.isEmpty() || !t2Queue.isEmpty()
 
-    override fun init() {
-        nBuses.times {
-            val bus = Bus()
-            buses.add(bus)
-            addEvent(randArrival(bus))
-        }
-        addEvent(CstArrivedOnT1Event(this))
-        addEvent(CstArrivedOnT2Event(this))
+    fun init(endTime: Double, nBuses: Int, nDesks: Int, slowMo: Boolean = false, log: Boolean = false) {
+        super.init(endTime, slowMo, log)
+        this.nBuses = nBuses
+        serviceDesk = ServiceDesk(this, nDesks)
     }
 
     override fun reset() {
-        buses.clear()
-        stats.reset()
+        super.reset()
+        val rand = Random()
+        rArrivalToT1.setSeed(rand.nextLong())
+        rArrivalToT2.setSeed(rand.nextLong())
+        rLoadOnT1.setSeed(rand.nextLong())
+        rLoadOnT2.setSeed(rand.nextLong())
+        rLeavedBus.setSeed(rand.nextLong())
+        rService.setSeed(rand.nextLong())
+        t1Queue.clear()
+        t2Queue.clear()
+        rentalQueue.clear()
+        serviceDesk.clear()
+        stats.clear()
+        init()
+    }
+
+    private fun init() {
+        nBuses.times {
+            addEvent(randArrival(Bus()))
+        }
+        addEvent(CstArrivedOnT1Event(this))
+        addEvent(CstArrivedOnT2Event(this))
     }
 
     private fun randArrival(bus: Bus): Event {

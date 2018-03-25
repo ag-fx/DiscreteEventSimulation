@@ -1,9 +1,9 @@
 package sk.ikim23.carrental.core.obj
 
-import sk.ikim23.carrental.core.ITimeManager
+import sk.ikim23.carrental.core.ITime
 
-class ServiceDesk(val manager: ITimeManager, val capacity: Int) {
-    private val servedCustomers = StatsQueue<Customer>(manager)
+class ServiceDesk(val time: ITime, val capacity: Int) {
+    private val servedCustomers = StatsQueue<Customer>(time)
 
     fun isFull() = servedCustomers.size() >= capacity
 
@@ -14,8 +14,10 @@ class ServiceDesk(val manager: ITimeManager, val capacity: Int) {
 
     fun remove(customer: Customer) {
         if(!servedCustomers.remove(customer)) throw IllegalStateException("$customer was not found")
-        customer.serviceTime = manager.currentTime()
+        customer.serviceTime = time.currentTime
     }
+
+    fun clear() = servedCustomers.clear()
 
     fun averageSize() = servedCustomers.averageSize()
 

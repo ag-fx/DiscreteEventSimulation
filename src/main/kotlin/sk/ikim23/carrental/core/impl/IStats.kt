@@ -8,6 +8,8 @@ interface IStats {
     fun averageT2QueueSize(): Double
     fun averageServiceDeskQueueSize(): Double
     fun averageServiceDeskUsage(): Double
+    fun clear()
+
     fun print() {
         println("Average user time: ${averageSystemTime()}")
         println("Average bus round time: ${averageRoundTime()}")

@@ -1,9 +1,9 @@
 package sk.ikim23.carrental.core.obj
 
-import sk.ikim23.carrental.core.ITimeManager
+import sk.ikim23.carrental.core.ITime
 import java.util.*
 
-class StatsQueue<T>(val manager: ITimeManager) {
+class StatsQueue<T>(val time: ITime) {
     private val queue: Queue<T> = LinkedList()
     private var sumSize = 0.0
     private var lastTime = 0.0
@@ -27,10 +27,12 @@ class StatsQueue<T>(val manager: ITimeManager) {
         return queue.remove(item)
     }
 
+    fun clear() = queue.clear()
+
     fun averageSize() = sumSize / lastTime
 
     private fun calcStats() {
-        sumSize += queue.size * (manager.currentTime() - lastTime)
-        lastTime = manager.currentTime()
+        sumSize += queue.size * (time.currentTime - lastTime)
+        lastTime = time.currentTime
     }
 }

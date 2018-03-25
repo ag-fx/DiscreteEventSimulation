@@ -2,34 +2,41 @@ package sk.ikim23.carrental.core
 
 import java.util.*
 
-abstract class Core(val endTime: Double, val log: Boolean) : ITimeManager {
-    private val eventQueue = PriorityQueue<Event>()
-    var currentTime = 0.0
+open class Core : Pauseable(), ITime {
+    var log = false
         private set
+    override val currentTime get() = curTime
+    private val eventQueue = PriorityQueue<Event>()
+    private var endTime = 0.0
+    private var curTime = 0.0
+    private var slowMo = false
 
-    abstract fun init()
+    override fun canTick(): Boolean {
+        val canTick = hasTime() || eventQueue.isNotEmpty()
+        if (!canTick && status == Status.RUNNING) stop()
+        return canTick
+    }
 
-    abstract fun reset()
+    override fun tick() {
+        val event = eventQueue.poll()
+        curTime = event.execTime
+        event.exec()
+    }
 
-    override fun currentTime() = currentTime
+    override fun beforeStart() = reset()
 
-    fun hasTime() = currentTime <= endTime
+    fun hasTime(): Boolean = curTime <= endTime
 
     fun addEvent(event: Event) = eventQueue.add(event)
 
-    fun start() {
-        resetAll()
-        init()
-        while (hasTime() || eventQueue.isNotEmpty()) {
-            val event = eventQueue.poll()
-            currentTime = event.execTime
-            event.exec()
-        }
+    fun init(endTime: Double, slowMo: Boolean, log: Boolean) {
+        this.endTime = endTime
+        this.log = log
     }
 
-    private fun resetAll() {
-        currentTime = 0.0
+    open fun reset() {
+        curTime = 0.0
         eventQueue.clear()
-        reset()
+        if (slowMo) addEvent(SlowMoEvent(this))
     }
 }

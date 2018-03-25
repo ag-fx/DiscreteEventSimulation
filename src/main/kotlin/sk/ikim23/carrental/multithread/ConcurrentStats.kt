@@ -3,6 +3,10 @@ package sk.ikim23.carrental.multithread
 import sk.ikim23.carrental.core.impl.IStats
 
 class ConcurrentStats(val nReps: Int) : IStats {
+    override fun clear() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     private var reps = 0
     private var sumAvgSystemTime = 0.0
     private var sumAvgRoundTime = 0.0

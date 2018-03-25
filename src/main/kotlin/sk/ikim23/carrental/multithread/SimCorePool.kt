@@ -16,21 +16,21 @@ class SimCorePool(val listener: ISimCorePoolListener, val nReps: Int, val config
     private val stats = ConcurrentStats(nReps)
 
     fun start() {
-        nRunningThreads.times {
-            thread {
-                while (stats.needNext()) {
-                    val core = SimCore(config.endTime, config.nBuses, config.nDesks)
-                    core.start()
-                    stats.take(core.stats)
-                    listener.onStatsUpdate(stats)
-                }
-                synchronized(lock) {
-                    nRunningThreads--
-                    if (nRunningThreads <= 0) {
-                        listener.onDone(stats)
-                    }
-                }
-            }
-        }
+//        nRunningThreads.times {
+//            thread {
+//                while (stats.needNext()) {
+//                    val core = SimCore(config.endTime, config.nBuses, config.nDesks)
+//                    core.start()
+//                    stats.take(core.stats)
+//                    listener.onStatsUpdate(stats)
+//                }
+//                synchronized(lock) {
+//                    nRunningThreads--
+//                    if (nRunningThreads <= 0) {
+//                        listener.onDone(stats)
+//                    }
+//                }
+//            }
+//        }
     }
 }
