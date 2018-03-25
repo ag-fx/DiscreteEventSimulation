@@ -25,19 +25,25 @@ class Stats(val core: SimCore) : IStats {
         }
     }
 
+    override fun systemTime() = core.currentTime
     override fun averageSystemTime() = (sumTime / nCustomers) / 60
-
     override fun averageRoundTime() = (sumRoundTime / nBuses) / 60
-
     override fun averageBusUsage() = sumBusUsage / nBuses
-
     override fun averageT1QueueSize() = core.t1Queue.averageSize()
-
     override fun averageT2QueueSize() = core.t2Queue.averageSize()
-
     override fun averageServiceDeskQueueSize() = core.serviceDesk.averageSize()
-
     override fun averageServiceDeskUsage() = core.serviceDesk.averageUsage()
+
+    @Synchronized
+    override fun copy(): IStats {
+        val stats = Stats(core)
+        stats.nBuses = nBuses
+        stats.nCustomers = nCustomers
+        stats.sumTime = sumTime
+        stats.sumRoundTime = sumRoundTime
+        stats.sumBusUsage = sumBusUsage
+        return stats
+    }
 
     override fun clear() {
         nBuses = 0

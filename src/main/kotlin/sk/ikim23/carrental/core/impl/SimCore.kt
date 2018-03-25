@@ -28,18 +28,20 @@ class SimCore : Core() {
     val rentalQueue = StatsQueue<Customer>(this)
     lateinit var serviceDesk: ServiceDesk
     var nBuses = 0
+    var listener: IStatsListener? = null
     val stats = Stats(this)
 
     fun customersAreWaiting() = hasTime() || !t1Queue.isEmpty() || !t2Queue.isEmpty()
 
-    fun init(endTime: Double, nBuses: Int, nDesks: Int, slowMo: Boolean = false, log: Boolean = false) {
-        super.init(endTime, slowMo, log)
+    fun init(endTime: Double, nBuses: Int, nDesks: Int, listener: IStatsListener? = null, log: Boolean = false) {
+        super.init(endTime, log)
         this.nBuses = nBuses
+        this.listener = listener
         serviceDesk = ServiceDesk(this, nDesks)
     }
 
-    override fun reset() {
-        super.reset()
+    override fun beforeStart() {
+        super.beforeStart()
         val rand = Random()
         rArrivalToT1.setSeed(rand.nextLong())
         rArrivalToT2.setSeed(rand.nextLong())
@@ -52,15 +54,17 @@ class SimCore : Core() {
         rentalQueue.clear()
         serviceDesk.clear()
         stats.clear()
-        init()
-    }
-
-    private fun init() {
+        // init model
         nBuses.times {
             addEvent(randArrival(Bus()))
         }
         addEvent(CstArrivedOnT1Event(this))
         addEvent(CstArrivedOnT2Event(this))
+        if (listener != null) addEvent(SlowMoEvent(this, listener!!))
+    }
+
+    override fun afterStop() {
+        listener?.onDone(stats)
     }
 
     private fun randArrival(bus: Bus): Event {

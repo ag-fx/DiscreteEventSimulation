@@ -9,13 +9,8 @@ open class Core : Pauseable(), ITime {
     private val eventQueue = PriorityQueue<Event>()
     private var endTime = 0.0
     private var curTime = 0.0
-    private var slowMo = false
 
-    override fun canTick(): Boolean {
-        val canTick = hasTime() || eventQueue.isNotEmpty()
-        if (!canTick && status == Status.RUNNING) stop()
-        return canTick
-    }
+    override fun canTick() = hasTime() || eventQueue.isNotEmpty()
 
     override fun tick() {
         val event = eventQueue.poll()
@@ -23,20 +18,17 @@ open class Core : Pauseable(), ITime {
         event.exec()
     }
 
-    override fun beforeStart() = reset()
+    override fun beforeStart() {
+        curTime = 0.0
+        eventQueue.clear()
+    }
 
     fun hasTime(): Boolean = curTime <= endTime
 
     fun addEvent(event: Event) = eventQueue.add(event)
 
-    fun init(endTime: Double, slowMo: Boolean, log: Boolean) {
+    fun init(endTime: Double, log: Boolean) {
         this.endTime = endTime
         this.log = log
-    }
-
-    open fun reset() {
-        curTime = 0.0
-        eventQueue.clear()
-        if (slowMo) addEvent(SlowMoEvent(this))
     }
 }

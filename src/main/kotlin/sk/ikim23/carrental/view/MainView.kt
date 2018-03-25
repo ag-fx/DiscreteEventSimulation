@@ -58,10 +58,10 @@ class MainView : View() {
                     label("Speed:")
                     textfield {
                         prefWidth = 50.0
-                        textProperty().bindBidirectional(controller.inputModel.speed, IntConverter())
+                        textProperty().bindBidirectional(controller.repModel.speed, IntConverter())
                     }
                     slider(0,100) {
-                        valueProperty().bindBidirectional(controller.inputModel.speed)
+                        valueProperty().bindBidirectional(controller.repModel.speed)
                     }
                 }
                 separator()
@@ -74,6 +74,10 @@ class MainView : View() {
                 gridpane {
                     hgap = cSpacing
                     vgap = cSpacing
+                    row {
+                        label("Time:")
+                        label { textProperty().bind(controller.repModel.systemTime) }
+                    }
                     row {
                         label("Average user time:")
                         label { textProperty().bind(controller.repModel.averageSystemTime) }

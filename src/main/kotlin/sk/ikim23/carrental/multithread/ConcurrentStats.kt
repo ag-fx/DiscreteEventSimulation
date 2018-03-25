@@ -3,6 +3,14 @@ package sk.ikim23.carrental.multithread
 import sk.ikim23.carrental.core.impl.IStats
 
 class ConcurrentStats(val nReps: Int) : IStats {
+    override fun systemTime(): Double {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun copy(): IStats {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun clear() {
         TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }

@@ -2,19 +2,33 @@ package sk.ikim23.carrental.core
 
 import java.util.concurrent.atomic.AtomicReference
 
-open class Pauseable {
+open class Pauseable(private val log: Boolean = false) {
     enum class Status {
-        RUNNING, PAUSED, STOPPED, DESTROYED
+        RUNNING, PAUSED, STOPPED, SLEEPING, DESTROYED
     }
 
-    private val log = false
+    companion object {
+        var ID = 0
+    }
+
     private val threadStatus = AtomicReference(Status.STOPPED)
     private val lock = Object()
+    private var sleep = 0L
     val status: Status get() = threadStatus.get()
 
     init {
-        Thread({
+        val thread = Thread({
             while (status != Status.DESTROYED) {
+                if (status == Status.SLEEPING) {
+                    try {
+                        Thread.sleep(sleep)
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                    if (status == Status.SLEEPING) {
+                        threadStatus.set(Status.RUNNING)
+                    }
+                }
                 if (status == Status.PAUSED || status == Status.STOPPED) {
                     synchronized(lock) {
                         try {
@@ -24,9 +38,15 @@ open class Pauseable {
                         }
                     }
                 }
-                if (canTick()) tick()
+                if (canTick()) {
+                    tick()
+                } else {
+                    stop()
+                }
             }
-        }).start()
+        })
+        thread.name = "SimCoreWorker-${++ID}"
+        thread.start()
     }
 
     open fun canTick() = true
@@ -36,6 +56,13 @@ open class Pauseable {
     open fun beforeStart() {}
 
     open fun afterStop() {}
+
+    fun sleep(millis: Long) {
+        if (millis > 0 && status == Status.RUNNING) {
+            sleep = millis
+            threadStatus.set(Status.SLEEPING)
+        }
+    }
 
     fun start() {
         val s = status
@@ -56,14 +83,16 @@ open class Pauseable {
     }
 
     fun pause() {
-        if (status != Status.DESTROYED && status == Status.RUNNING) {
+        val s = status
+        if (s != Status.DESTROYED && (s == Status.RUNNING || s == Status.SLEEPING)) {
             threadStatus.set(Status.PAUSED)
             if (log) println(status)
         }
     }
 
     fun stop() {
-        if (status != Status.DESTROYED && status != Status.STOPPED) {
+        val s = status
+        if (s != Status.DESTROYED && (s == Status.RUNNING || s == Status.SLEEPING)) {
             threadStatus.set(Status.STOPPED)
             if (log) println(status)
             afterStop()

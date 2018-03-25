@@ -1,12 +1,10 @@
 package sk.ikim23.carrental.controller
 
-import sk.ikim23.carrental.core.Pauseable
 import sk.ikim23.carrental.core.impl.SimCore
 import sk.ikim23.carrental.daysToSec
 import sk.ikim23.carrental.model.InputModel
 import sk.ikim23.carrental.model.ReplicationModel
 import tornadofx.*
-import kotlin.concurrent.thread
 
 class MainController : Controller() {
     val inputModel = InputModel(1_000_000, 5, 8)
@@ -17,7 +15,7 @@ class MainController : Controller() {
     fun start() {
         if (!init) {
             init = true
-            core.init(daysToSec(30), inputModel.nBuses.get(), inputModel.nEmployees.get(), true)
+            core.init(daysToSec(30), inputModel.nBuses.get(), inputModel.nEmployees.get(), repModel, false)
         }
         core.start()
     }

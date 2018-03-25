@@ -1,6 +1,7 @@
 package sk.ikim23.carrental.core.impl
 
 interface IStats {
+    fun systemTime(): Double
     fun averageSystemTime(): Double
     fun averageRoundTime(): Double
     fun averageBusUsage(): Double
@@ -8,6 +9,7 @@ interface IStats {
     fun averageT2QueueSize(): Double
     fun averageServiceDeskQueueSize(): Double
     fun averageServiceDeskUsage(): Double
+    fun copy(): IStats
     fun clear()
 
     fun print() {
