@@ -4,6 +4,7 @@ import javafx.geometry.Insets
 import javafx.geometry.Orientation
 import javafx.geometry.Pos
 import javafx.scene.control.Label
+import javafx.scene.layout.Priority
 import javafx.scene.text.Font
 import sk.ikim23.carrental.controller.MainController
 import sk.ikim23.carrental.core.impl.IStatsListener
@@ -16,6 +17,8 @@ class MainView : View() {
     val cSpacing = 5.0
     val cAlignment = Pos.CENTER_LEFT
     val controller: MainController by inject()
+    val replicationView = StatsView(controller.replicationModel)
+    val summaryView = StatsView(controller.summaryModel)
 
     init {
         title = "AirCar Rental"
@@ -45,7 +48,6 @@ class MainView : View() {
                     }
                     button("Start") {
                         prefWidth = cWidth
-                        disableProperty().bind(controller.inputModel.disableControls)
                         setOnAction { controller.start() }
                     }
                     button("Pause") {
@@ -58,8 +60,8 @@ class MainView : View() {
                     }
                     label("Step by:")
                     combobox<IStatsListener.Step> {
-                        items = controller.repModel.steps
-                        valueProperty().bindBidirectional(controller.repModel.step)
+                        items = controller.replicationModel.steps
+                        valueProperty().bindBidirectional(controller.replicationModel.step)
                         cellFormat { text = it.title }
                     }
                 }
@@ -70,52 +72,33 @@ class MainView : View() {
             hbox {
                 padding = cPadding
                 spacing = cSpacing
-                gridpane {
-                    hgap = cSpacing
-                    vgap = cSpacing
-                    row {
+                vbox {
+                    hbox {
                         label("Time:")
-                        label { textProperty().bind(controller.repModel.systemTime) }
+                        label {
+                            maxWidth = Double.MAX_VALUE
+                            hgrow = Priority.ALWAYS
+                            alignment = Pos.CENTER_RIGHT
+                            textProperty().bind(controller.replicationModel.systemTime)
+                        }
+                        children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
                     }
-                    row {
-                        label("Users:")
-                        label { textProperty().bind(controller.repModel.nUsers.asString()) }
-                    }
-                    row {
-                        label("User time:")
-                        label { textProperty().bind(controller.repModel.averageSystemTime.asString()) }
-                    }
-                    row {
-                        label("Bus rounds:")
-                        label { textProperty().bind(controller.repModel.nBusRounds.asString()) }
-                    }
-                    row {
-                        label("Bus round time:")
-                        label { textProperty().bind(controller.repModel.averageRoundTime.asString()) }
-                    }
-                    row {
-                        label("Bus usage:")
-                        label { textProperty().bind(controller.repModel.averageBusUsage.asString()) }
-                    }
-                    row {
-                        label("T1 queue length:")
-                        label { textProperty().bind(controller.repModel.averageT1QueueSize.asString()) }
-                    }
-                    row {
-                        label("T2 queue length:")
-                        label { textProperty().bind(controller.repModel.averageT2QueueSize.asString()) }
-                    }
-                    row {
-                        label("Service desk queue length:")
-                        label { textProperty().bind(controller.repModel.averageServiceDeskQueueSize.asString()) }
-                    }
-                    row {
-                        label("Service desk usage:")
-                        label { textProperty().bind(controller.repModel.averageServiceDeskUsage.asString()) }
-                    }
-                    children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
+                    children.add(replicationView.root)
                 }
                 separator(Orientation.VERTICAL)
+                vbox {
+                    hbox {
+                        label("Replications:")
+                        label {
+                            maxWidth = Double.MAX_VALUE
+                            hgrow = Priority.ALWAYS
+                            alignment = Pos.CENTER_RIGHT
+                            textProperty().bind(controller.summaryModel.nReplications.asString())
+                        }
+                        children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
+                    }
+                    children.add(summaryView.root)
+                }
             }
         }
     }

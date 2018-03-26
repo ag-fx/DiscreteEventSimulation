@@ -22,6 +22,7 @@ open class Pauseable(private val log: Boolean = false) {
     private val threadStatus = AtomicReference(Status.STOPPED)
     private val lock = Object()
     private var sleep = 0L
+    private var nRepsToStop = 0
     val status: Status get() = threadStatus.get()
 
     init {
@@ -49,6 +50,10 @@ open class Pauseable(private val log: Boolean = false) {
                     tick()
                 } else {
                     stop()
+                    if (nRepsToStop-- > 0) {
+                        threadStatus.set(Status.RUNNING)
+                        beforeStart()
+                    }
                 }
             }
         })
@@ -72,7 +77,8 @@ open class Pauseable(private val log: Boolean = false) {
         }
     }
 
-    fun start() {
+    fun start(nReps: Int = 1) {
+        nRepsToStop = nReps
         val s = status
         if (s == Status.DESTROYED) {
             throw IllegalStateException("Destroyed instance can not be started")

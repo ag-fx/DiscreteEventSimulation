@@ -23,7 +23,9 @@ open class Core : Pauseable(), ITime {
         eventQueue.clear()
     }
 
-    fun hasTime(): Boolean = curTime <= endTime
+    fun hasTime() = curTime <= endTime
+
+    fun hasEvents() = eventQueue.isNotEmpty()
 
     fun addEvent(event: Event) = eventQueue.add(event)
 

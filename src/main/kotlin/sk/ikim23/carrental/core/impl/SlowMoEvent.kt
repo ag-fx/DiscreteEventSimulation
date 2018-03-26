@@ -8,7 +8,7 @@ class SlowMoEvent(val core: SimCore, val listener: IStatsListener) : Event(core,
             listener.onUpdate(core.stats)
             core.sleep(100)
         }
-        if (core.customersAreWaiting()) {
+        if (core.hasEvents()) {
             core.addEvent(SlowMoEvent(core, listener))
         }
     }
