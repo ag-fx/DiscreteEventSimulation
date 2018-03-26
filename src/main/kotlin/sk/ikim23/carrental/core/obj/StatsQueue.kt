@@ -27,7 +27,11 @@ class StatsQueue<T>(val time: ITime) {
         return queue.remove(item)
     }
 
-    fun clear() = queue.clear()
+    fun clear() {
+        queue.clear()
+        sumSize = 0.0
+        lastTime = 0.0
+    }
 
     fun averageSize() = sumSize / lastTime
 
