@@ -78,32 +78,40 @@ class MainView : View() {
                         label { textProperty().bind(controller.repModel.systemTime) }
                     }
                     row {
-                        label("Average user time:")
-                        label { textProperty().bind(controller.repModel.averageSystemTime) }
+                        label("Users:")
+                        label { textProperty().bind(controller.repModel.nUsers.asString()) }
                     }
                     row {
-                        label("Average bus round time:")
-                        label { textProperty().bind(controller.repModel.averageRoundTime) }
+                        label("User time:")
+                        label { textProperty().bind(controller.repModel.averageSystemTime.asString()) }
                     }
                     row {
-                        label("Average bus usage:")
-                        label { textProperty().bind(controller.repModel.averageBusUsage) }
+                        label("Bus rounds:")
+                        label { textProperty().bind(controller.repModel.nBusRounds.asString()) }
                     }
                     row {
-                        label("Average T1 queue:")
-                        label { textProperty().bind(controller.repModel.averageT1QueueSize) }
+                        label("Bus round time:")
+                        label { textProperty().bind(controller.repModel.averageRoundTime.asString()) }
                     }
                     row {
-                        label("Average T2 queue:")
-                        label { textProperty().bind(controller.repModel.averageT2QueueSize) }
+                        label("Bus usage:")
+                        label { textProperty().bind(controller.repModel.averageBusUsage.asString()) }
                     }
                     row {
-                        label("Average service desk queue:")
-                        label { textProperty().bind(controller.repModel.averageServiceDeskQueueSize) }
+                        label("T1 queue length:")
+                        label { textProperty().bind(controller.repModel.averageT1QueueSize.asString()) }
                     }
                     row {
-                        label("Average service desk usage:")
-                        label { textProperty().bind(controller.repModel.averageServiceDeskUsage) }
+                        label("T2 queue length:")
+                        label { textProperty().bind(controller.repModel.averageT2QueueSize.asString()) }
+                    }
+                    row {
+                        label("Service desk queue length:")
+                        label { textProperty().bind(controller.repModel.averageServiceDeskQueueSize.asString()) }
+                    }
+                    row {
+                        label("Service desk usage:")
+                        label { textProperty().bind(controller.repModel.averageServiceDeskUsage.asString()) }
                     }
                     children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
                 }

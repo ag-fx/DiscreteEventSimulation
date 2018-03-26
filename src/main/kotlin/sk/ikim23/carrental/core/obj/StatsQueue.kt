@@ -1,6 +1,7 @@
 package sk.ikim23.carrental.core.obj
 
 import sk.ikim23.carrental.core.ITime
+import sk.ikim23.carrental.safeDiv
 import java.util.*
 
 class StatsQueue<T>(val time: ITime) {
@@ -33,7 +34,7 @@ class StatsQueue<T>(val time: ITime) {
         lastTime = 0.0
     }
 
-    fun averageSize() = sumSize / lastTime
+    fun averageSize() = sumSize safeDiv lastTime
 
     private fun calcStats() {
         sumSize += queue.size * (time.currentTime - lastTime)

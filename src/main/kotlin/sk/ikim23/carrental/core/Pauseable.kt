@@ -98,8 +98,13 @@ open class Pauseable(private val log: Boolean = false) {
 
     fun stop() {
         val s = status
-        if (s != Status.DESTROYED && (s == Status.RUNNING || s == Status.SLEEPING)) {
+        if (s != Status.DESTROYED && s != Status.STOPPED) {
             threadStatus.set(Status.STOPPED)
+            synchronized(lock) {
+                withTryCatch {
+                    lock.notifyAll()
+                }
+            }
             if (log) println(status)
             afterStop()
         }

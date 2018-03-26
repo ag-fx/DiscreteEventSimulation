@@ -2,6 +2,7 @@ package sk.ikim23.carrental.core.impl
 
 import sk.ikim23.carrental.core.obj.Bus
 import sk.ikim23.carrental.core.obj.Customer
+import sk.ikim23.carrental.safeDiv
 
 class Stats(val core: SimCore) : IStats {
     private var nBuses = 0
@@ -26,24 +27,15 @@ class Stats(val core: SimCore) : IStats {
     }
 
     override fun systemTime() = core.currentTime
-    override fun averageSystemTime() = (sumTime / nCustomers) / 60
-    override fun averageRoundTime() = (sumRoundTime / nBuses) / 60
-    override fun averageBusUsage() = sumBusUsage / nBuses
+    override fun customerCount() = nCustomers
+    override fun averageSystemTime() = (sumTime / nCustomers) safeDiv 60
+    override fun roundCount() = nBuses
+    override fun averageRoundTime() = (sumRoundTime / nBuses) safeDiv 60
+    override fun averageBusUsage() = sumBusUsage safeDiv nBuses
     override fun averageT1QueueSize() = core.t1Queue.averageSize()
     override fun averageT2QueueSize() = core.t2Queue.averageSize()
     override fun averageServiceDeskQueueSize() = core.serviceDesk.averageSize()
     override fun averageServiceDeskUsage() = core.serviceDesk.averageUsage()
-
-    @Synchronized
-    override fun copy(): IStats {
-        val stats = Stats(core)
-        stats.nBuses = nBuses
-        stats.nCustomers = nCustomers
-        stats.sumTime = sumTime
-        stats.sumRoundTime = sumRoundTime
-        stats.sumBusUsage = sumBusUsage
-        return stats
-    }
 
     override fun clear() {
         nBuses = 0
