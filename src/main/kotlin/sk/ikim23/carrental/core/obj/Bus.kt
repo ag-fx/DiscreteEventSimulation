@@ -22,7 +22,7 @@ class Bus(val capacity: Int = 12) {
 
     fun remove(): Customer = passengers.remove()
 
-    fun usedCapacity() = passengers.size / capacity
+    fun usedCapacity() = passengers.size.toDouble() / capacity
 
     override fun toString() = "Bus(id=$id, usedCapacity=${passengers.size})"
 }

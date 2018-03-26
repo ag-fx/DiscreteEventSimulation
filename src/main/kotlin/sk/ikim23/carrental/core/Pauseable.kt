@@ -1,5 +1,7 @@
 package sk.ikim23.carrental.core
 
+import sk.ikim23.carrental.withTryCatch
+import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
 open class Pauseable(private val log: Boolean = false) {
@@ -9,6 +11,11 @@ open class Pauseable(private val log: Boolean = false) {
 
     companion object {
         var ID = 0
+        private val threads = LinkedList<Pauseable>()
+
+        fun destroyAll() {
+            threads.forEach { it.destroy() }
+        }
     }
 
     private val threadStatus = AtomicReference(Status.STOPPED)
@@ -18,12 +25,10 @@ open class Pauseable(private val log: Boolean = false) {
 
     init {
         val thread = Thread({
-            while (status != Status.DESTROYED) {
+            while (true) {
                 if (status == Status.SLEEPING) {
-                    try {
+                    withTryCatch {
                         Thread.sleep(sleep)
-                    } catch (e: Exception) {
-                        e.printStackTrace()
                     }
                     if (status == Status.SLEEPING) {
                         threadStatus.set(Status.RUNNING)
@@ -31,12 +36,13 @@ open class Pauseable(private val log: Boolean = false) {
                 }
                 if (status == Status.PAUSED || status == Status.STOPPED) {
                     synchronized(lock) {
-                        try {
+                        withTryCatch {
                             lock.wait()
-                        } catch (e: Exception) {
-                            e.printStackTrace()
                         }
                     }
+                }
+                if (status == Status.DESTROYED) {
+                    return@Thread
                 }
                 if (canTick()) {
                     tick()
@@ -47,6 +53,7 @@ open class Pauseable(private val log: Boolean = false) {
         })
         thread.name = "SimCoreWorker-${++ID}"
         thread.start()
+        threads.add(this)
     }
 
     open fun canTick() = true
@@ -72,10 +79,8 @@ open class Pauseable(private val log: Boolean = false) {
             if (s == Status.STOPPED) beforeStart()
             threadStatus.set(Status.RUNNING)
             synchronized(lock) {
-                try {
+                withTryCatch {
                     lock.notifyAll()
-                } catch (e: Exception) {
-                    e.printStackTrace()
                 }
             }
             if (log) println(status)
@@ -102,6 +107,11 @@ open class Pauseable(private val log: Boolean = false) {
     fun destroy() {
         if (status != Status.DESTROYED) {
             threadStatus.set(Status.DESTROYED)
+            synchronized(lock) {
+                withTryCatch {
+                    lock.notifyAll()
+                }
+            }
             if (log) println(status)
         }
     }

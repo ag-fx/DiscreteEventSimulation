@@ -22,7 +22,10 @@ class ReplicationModel : IStatsListener {
     override val timeSpeed get() = 1.0 - (speed.get() / 100.0)
 
     override fun onUpdate(stats: IStats) = update(stats)
-    override fun onDone(stats: IStats) = update(stats)
+    override fun onDone(stats: IStats) {
+        update(stats)
+        stats.print()
+    }
 
     fun update(stats: IStats) {
         Platform.runLater {

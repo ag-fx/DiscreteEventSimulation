@@ -13,6 +13,7 @@ interface IStats {
     fun clear()
 
     fun print() {
+        println("System time: ${systemTime()}")
         println("Average user time: ${averageSystemTime()}")
         println("Average bus round time: ${averageRoundTime()}")
         println("Average bus usage: ${averageBusUsage()}")

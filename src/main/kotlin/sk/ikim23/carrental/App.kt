@@ -1,12 +1,21 @@
 package sk.ikim23.carrental
 
+import javafx.stage.Stage
+import sk.ikim23.carrental.core.Pauseable
 import sk.ikim23.carrental.core.impl.IStats
 import sk.ikim23.carrental.multithread.SimConfig
 import sk.ikim23.carrental.multithread.SimCorePool
 import sk.ikim23.carrental.view.MainView
 import tornadofx.App
 
-class App : App(MainView::class)
+class App : App(MainView::class) {
+    override fun start(stage: Stage) {
+        super.start(stage)
+        stage.setOnCloseRequest {
+            Pauseable.destroyAll()
+        }
+    }
+}
 
 //fun main(args: Array<String>) {
 //    val start = System.currentTimeMillis()

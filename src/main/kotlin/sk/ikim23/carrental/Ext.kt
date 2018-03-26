@@ -15,3 +15,11 @@ fun formatTime(time: Double): String {
     val seconds = rest - (minutes * 60)
     return "%02d:%02d:%02d:%06.3f".format(days, hours, minutes, seconds)
 }
+
+fun withTryCatch(call: () -> Unit) {
+    try {
+        call()
+    } catch (e: Exception) {
+        e.printStackTrace()
+    }
+}
