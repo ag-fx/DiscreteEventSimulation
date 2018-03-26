@@ -15,6 +15,7 @@ open class Pauseable(private val log: Boolean = false) {
 
         fun destroyAll() {
             threads.forEach { it.destroy() }
+            threads.clear()
         }
     }
 

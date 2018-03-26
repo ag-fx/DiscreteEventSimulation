@@ -6,6 +6,7 @@ import javafx.geometry.Pos
 import javafx.scene.control.Label
 import javafx.scene.text.Font
 import sk.ikim23.carrental.controller.MainController
+import sk.ikim23.carrental.core.impl.IStatsListener
 import tornadofx.*
 
 class MainView : View() {
@@ -55,13 +56,11 @@ class MainView : View() {
                         prefWidth = cWidth
                         setOnAction { controller.stop() }
                     }
-                    label("Speed:")
-                    textfield {
-                        prefWidth = 50.0
-                        textProperty().bindBidirectional(controller.repModel.speed, IntConverter())
-                    }
-                    slider(0,100) {
-                        valueProperty().bindBidirectional(controller.repModel.speed)
+                    label("Step by:")
+                    combobox<IStatsListener.Step> {
+                        items = controller.repModel.steps
+                        valueProperty().bindBidirectional(controller.repModel.step)
+                        cellFormat { text = it.title }
                     }
                 }
                 separator()
