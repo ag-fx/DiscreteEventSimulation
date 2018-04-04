@@ -4,6 +4,8 @@ fun Int.times(call: (i: Int) -> Unit) {
     for (index in 0 until this) call(index)
 }
 
+fun sqrt(i: Int) = Math.sqrt(i.toDouble())
+
 fun withTryCatch(call: () -> Unit) {
     try {
         call()

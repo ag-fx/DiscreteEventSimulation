@@ -11,7 +11,7 @@ import sk.ikim23.carrental.random.NormRandom
 import sk.ikim23.carrental.times
 import java.util.*
 
-class SimCore : Core() {
+class SimCore(val listener: ISimListener) : Core() {
     val tTimeToT1 = calcTravelTime(6.4)
     val tTimeToT2 = calcTravelTime(0.5)
     val tTimeToRental = calcTravelTime(2.5)
@@ -28,15 +28,13 @@ class SimCore : Core() {
     val rentalQueue = StatsQueue<Customer>(this)
     lateinit var serviceDesk: ServiceDesk
     var nBuses = 0
-    var listener: IStatsListener? = null
     val stats = Stats(this)
 
     fun customersAreWaiting() = hasTime() || !t1Queue.isEmpty() || !t2Queue.isEmpty()
 
-    fun init(endTime: Double, nBuses: Int, nDesks: Int, listener: IStatsListener? = null, log: Boolean = false) {
-        super.init(endTime, log)
+    fun init(endTime: Double, nBuses: Int, nDesks: Int) {
+        super.init(endTime)
         this.nBuses = nBuses
-        this.listener = listener
         serviceDesk = ServiceDesk(this, nDesks)
     }
 
@@ -60,11 +58,11 @@ class SimCore : Core() {
         }
         addEvent(CstArrivedOnT1Event(this))
         addEvent(CstArrivedOnT2Event(this))
-        if (listener != null) addEvent(SlowMoEvent(this, listener!!))
+        addEvent(SlowMoEvent(this, listener))
     }
 
-    override fun afterStop() {
-        listener?.onDone(stats)
+    override fun afterDone() {
+        listener.onDone(this, stats)
     }
 
     private fun randArrival(bus: Bus): Event {

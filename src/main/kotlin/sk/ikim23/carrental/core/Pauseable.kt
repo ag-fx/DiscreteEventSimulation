@@ -4,7 +4,7 @@ import sk.ikim23.carrental.withTryCatch
 import java.util.*
 import java.util.concurrent.atomic.AtomicReference
 
-open class Pauseable(private val log: Boolean = false) {
+abstract class Pauseable(private val log: Boolean = false) {
     enum class Status {
         RUNNING, PAUSED, STOPPED, SLEEPING, DESTROYED
     }
@@ -22,7 +22,6 @@ open class Pauseable(private val log: Boolean = false) {
     private val threadStatus = AtomicReference(Status.STOPPED)
     private val lock = Object()
     private var sleep = 0L
-    private var nRepsToStop = 0
     val status: Status get() = threadStatus.get()
 
     init {
@@ -50,10 +49,7 @@ open class Pauseable(private val log: Boolean = false) {
                     tick()
                 } else {
                     stop()
-                    if (nRepsToStop-- > 0) {
-                        threadStatus.set(Status.RUNNING)
-                        beforeStart()
-                    }
+                    afterDone()
                 }
             }
         })
@@ -64,11 +60,11 @@ open class Pauseable(private val log: Boolean = false) {
 
     open fun canTick() = true
 
-    open fun tick() {}
+    abstract fun tick()
 
-    open fun beforeStart() {}
+    abstract fun beforeStart()
 
-    open fun afterStop() {}
+    abstract internal fun afterDone()
 
     fun sleep(millis: Long) {
         if (millis > 0 && status == Status.RUNNING) {
@@ -77,8 +73,7 @@ open class Pauseable(private val log: Boolean = false) {
         }
     }
 
-    fun start(nReps: Int = 1) {
-        nRepsToStop = nReps
+    fun start() {
         val s = status
         if (s == Status.DESTROYED) {
             throw IllegalStateException("Destroyed instance can not be started")
@@ -112,7 +107,6 @@ open class Pauseable(private val log: Boolean = false) {
                 }
             }
             if (log) println(status)
-            afterStop()
         }
     }
 

@@ -1,6 +1,5 @@
 package sk.ikim23.carrental.model
 
-import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleIntegerProperty
 import tornadofx.*
 
@@ -10,17 +9,18 @@ class InputModel(val listener: InputChangeListener, nReps: Int, nBuses: Int, nEm
     }
 
     val nReplications = SimpleIntegerProperty(nReps)
-    val nBuses = SimpleIntegerProperty(nBuses)
-    val nEmployees = SimpleIntegerProperty(nEmployees)
-    val disableControls = SimpleBooleanProperty()
+    val busFrom = SimpleIntegerProperty(nBuses)
+    val busTo = SimpleIntegerProperty(nBuses)
+    val employeesFrom = SimpleIntegerProperty(nEmployees)
+    val employeesTo = SimpleIntegerProperty(nEmployees)
 
     init {
         nReplications.onChange { promoteChange() }
-        this.nBuses.onChange { promoteChange() }
-        this.nEmployees.onChange { promoteChange() }
+        this.busFrom.onChange { promoteChange() }
+        this.employeesFrom.onChange { promoteChange() }
     }
 
     private fun promoteChange() {
-        listener.onChange(nReplications.get(), nBuses.get(), nEmployees.get())
+        listener.onChange(nReplications.get(), busFrom.get(), employeesFrom.get())
     }
 }

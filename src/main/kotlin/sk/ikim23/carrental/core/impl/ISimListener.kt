@@ -1,6 +1,8 @@
 package sk.ikim23.carrental.core.impl
 
-interface IStatsListener {
+import sk.ikim23.carrental.core.Core
+
+interface ISimListener {
     enum class Step(val title: String, val value: Int) {
         MINUTE("minute", 60),
         HOUR("hour", 60 * 60),
@@ -9,6 +11,7 @@ interface IStatsListener {
     }
 
     val timeStep: Step
-    fun onUpdate(stats: IStats)
-    fun onDone(stats: IStats)
+
+    fun onDone(core: Core, stats: IStats)
+    fun onStep(stats: IStats)
 }

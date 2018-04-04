@@ -19,14 +19,14 @@ open class StatsModel {
     open fun update(stats: IStats) {
         Platform.runLater {
             nUsers.set(stats.customerCount())
-            avgSystemTime.set(stats.averageSystemTime())
+            avgSystemTime.set(stats.avgSysTime())
             nBusRounds.set(stats.roundCount())
-            avgRoundTime.set(stats.averageRoundTime())
-            avgBusUsage.set(stats.averageBusUsage())
-            avgT1QueueSize.set(stats.averageT1QueueSize())
-            avgT2QueueSize.set(stats.averageT2QueueSize())
-            avgServiceDeskQueueSize.set(stats.averageServiceDeskQueueSize())
-            avgServiceDeskUsage.set(stats.averageServiceDeskUsage())
+            avgRoundTime.set(stats.avgRoundTime())
+            avgBusUsage.set(stats.avgBusUsage())
+            avgT1QueueSize.set(stats.avgT1QueueSize())
+            avgT2QueueSize.set(stats.avgT2QueueSize())
+            avgServiceDeskQueueSize.set(stats.avgServiceDeskQueueSize())
+            avgServiceDeskUsage.set(stats.avgServiceDeskUsage())
         }
     }
 

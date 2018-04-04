@@ -1,16 +1,13 @@
 package sk.ikim23.carrental.core
 
+import sk.ikim23.carrental.core.impl.SlowMoEvent
 import java.util.*
 
-open class Core : Pauseable(), ITime {
-    var log = false
-        private set
+abstract class Core(val log: Boolean = false) : Pauseable(log), ITime {
     override val currentTime get() = curTime
     private val eventQueue = PriorityQueue<Event>()
     private var endTime = 0.0
     private var curTime = 0.0
-
-    override fun canTick() = hasTime() || eventQueue.isNotEmpty()
 
     override fun tick() {
         val event = eventQueue.poll()
@@ -20,8 +17,10 @@ open class Core : Pauseable(), ITime {
 
     override fun beforeStart() {
         curTime = 0.0
-        eventQueue.clear()
+        eventQueue.removeIf { it !is SlowMoEvent }
     }
+
+    override fun canTick() = hasTime() || hasEvents()
 
     fun hasTime() = curTime <= endTime
 
@@ -29,8 +28,7 @@ open class Core : Pauseable(), ITime {
 
     fun addEvent(event: Event) = eventQueue.add(event)
 
-    fun init(endTime: Double, log: Boolean) {
+    fun init(endTime: Double) {
         this.endTime = endTime
-        this.log = log
     }
 }
