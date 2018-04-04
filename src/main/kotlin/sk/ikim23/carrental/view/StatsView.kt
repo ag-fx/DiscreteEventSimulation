@@ -5,7 +5,6 @@ import javafx.scene.text.Font
 import sk.ikim23.carrental.model.StatsModel
 import tornadofx.*
 
-
 class StatsView(var model: StatsModel) : View() {
     override val root = gridpane()
 
@@ -17,8 +16,16 @@ class StatsView(var model: StatsModel) : View() {
             label { textProperty().bind(model.nUsers.asString()) }
         }
         root.row {
-            label("User time:")
+            label("Low user time:")
+            label { textProperty().bind(model.lowSystemTime.asString()) }
+        }
+        root.row {
+            label("Avg user time:")
             label { textProperty().bind(model.avgSystemTime.asString()) }
+        }
+        root.row {
+            label("Upp user time:")
+            label { textProperty().bind(model.uppSystemTime.asString()) }
         }
         root.row {
             label("Bus rounds:")

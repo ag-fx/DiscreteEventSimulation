@@ -5,6 +5,10 @@ import sk.ikim23.carrental.core.obj.Bus
 
 class BusArrivedToT2Event(val core: SimCore, val bus: Bus, execTime: Double? = null)
     : Event(core, execTime ?: core.currentTime + core.tTimeToT2) {
+    init {
+        bus.destination = "T2"
+    }
+
     override fun exec() {
         log("$bus arrived to T2")
         if (!bus.isFull() && !core.t2Queue.isEmpty()) {

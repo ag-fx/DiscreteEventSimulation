@@ -23,7 +23,6 @@ class MainView : View() {
     val controller: MainController by inject()
     val replicationView = StatsView(controller.replicationModel)
     val summaryView = StatsView(controller.summaryModel)
-    val tableRows = listOf(TableModel()).observable()
 
     init {
         title = "AirCar Rental"
@@ -62,6 +61,10 @@ class MainView : View() {
                         prefWidth = cWidth
                         setOnAction { controller.start() }
                     }
+                    button("Continue") {
+                        prefWidth = cWidth
+                        setOnAction { controller.continueRun() }
+                    }
                     button("Pause") {
                         prefWidth = cWidth
                         setOnAction { controller.pause() }
@@ -87,19 +90,36 @@ class MainView : View() {
                 vbox {
                     padding = cPadding
                     spacing = cSpacing
-                    hbox {
-                        label("Time:")
-                        label {
-                            maxWidth = Double.MAX_VALUE
-                            hgrow = Priority.ALWAYS
-                            alignment = Pos.CENTER_RIGHT
-                            textProperty().bind(controller.replicationModel.systemTime)
+                    gridpane {
+                        hgap = 5.0
+                        vgap = 5.0
+                        row {
+                            label("Time:")
+                            label {
+                                maxWidth = Double.MAX_VALUE
+                                hgrow = Priority.ALWAYS
+                                alignment = Pos.CENTER_RIGHT
+                                textProperty().bind(controller.replicationModel.systemTime)
+                            }
+                        }
+                        row {
+                            label("Buses:")
+                            label {
+                                textProperty().bind(controller.replicationModel.nBus.asString())
+                            }
+                        }
+                        row {
+                            label("Employees:")
+                            label {
+                                textProperty().bind(controller.replicationModel.nEmployees.asString())
+                            }
                         }
                         children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
                     }
                     children.add(replicationView.root)
                     textarea {
                         vgrow = Priority.ALWAYS
+                        textProperty().bind(controller.replicationModel.debug)
                     }
                 }
                 separator(Orientation.VERTICAL)
@@ -107,25 +127,29 @@ class MainView : View() {
                     padding = cPadding
                     spacing = cSpacing
                     hbox {
+                        spacing = cSpacing
                         label("Replications:")
                         label {
-                            maxWidth = Double.MAX_VALUE
-                            hgrow = Priority.ALWAYS
-                            alignment = Pos.CENTER_RIGHT
                             textProperty().bind(controller.summaryModel.nReplications.asString())
                         }
                         children.forEach { if (it is Label) it.font = Font("Arial", 16.0) }
                     }
                     children.add(summaryView.root)
                     hbox {
-                        linechart("g1", NumberAxis(), NumberAxis()) {
-
+                        linechart("# Buses", NumberAxis(), NumberAxis()) {
+                            (xAxis as NumberAxis).forceZeroInRangeProperty().set(false)
+                            (yAxis as NumberAxis).forceZeroInRangeProperty().set(false)
+                            animated = false
+                            data = controller.graphModel.busChartData
                         }
-                        linechart("g2", NumberAxis(), NumberAxis()) {
-
+                        linechart("# Employees", NumberAxis(), NumberAxis()) {
+                            (xAxis as NumberAxis).forceZeroInRangeProperty().set(false)
+                            (yAxis as NumberAxis).forceZeroInRangeProperty().set(false)
+                            animated = false
+                            data = controller.graphModel.emplChartData
                         }
                     }
-                    tableview(tableRows) {
+                    tableview(controller.graphModel.tableData) {
                         column("Bus", TableModel::nBus)
                         column("Employees", TableModel::nEmployees)
                         column("Lower bound", TableModel::lowerBound)

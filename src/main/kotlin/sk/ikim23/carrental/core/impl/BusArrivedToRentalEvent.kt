@@ -5,6 +5,10 @@ import sk.ikim23.carrental.core.obj.Bus
 
 class BusArrivedToRentalEvent(val core: SimCore, val bus: Bus, execTime: Double? = null)
     : Event(core, execTime ?: core.currentTime + core.tTimeToRental) {
+    init {
+        bus.destination = "CR"
+    }
+
     override fun exec() {
         log("$bus arrived to Rental shop")
         core.stats.take(bus)

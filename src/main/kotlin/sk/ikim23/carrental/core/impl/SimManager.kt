@@ -1,88 +1,76 @@
 package sk.ikim23.carrental.core.impl
 
-import sk.ikim23.carrental.core.Core
-import sk.ikim23.carrental.core.Pauseable
-import sk.ikim23.carrental.core.stats.BaseStats
 import sk.ikim23.carrental.daysToSec
+import sk.ikim23.carrental.model.GraphModel
 import sk.ikim23.carrental.model.ReplicationModel
 import sk.ikim23.carrental.model.SummaryModel
 import java.util.*
-import java.util.concurrent.atomic.AtomicInteger
 
-class SimManager(val rm: ReplicationModel, val sm: SummaryModel, val nCores: Int = 4) : ISimListener {
+class SimManager(val rm: ReplicationModel, val sm: SummaryModel, val gm: GraphModel) : ISimListener {
     override val timeStep get() = rm.timeStep
-    private val cores = Array(nCores, { SimCore(this) })
-    private val nReps = AtomicInteger()
+    private val core = SimCore(this)
+    private var nReps = 0
+    private var curRep = 0
+    private var configs = LinkedList<Pair<Int, Int>>()
     private var nBuses = 0
     private var nEmployees = 0
-    private val baseStats = BaseStats()
-    private var nPrint = 0
-    private var configs = LinkedList<Pair<Int, Int>>()
 
-    override fun onDone(core: Core, stats: IStats) {
-        baseStats.take(stats)
-        if (nReps.decrementAndGet() >= 0) {
+    override fun onDone(stats: Stats) {
+        sm.take(stats)
+        if (curRep < nReps) {
             core.start()
+            curRep++
         } else {
-            if (nPrint++ >= 3) {
-                println("bus: $nBuses empl: $nEmployees")
-                baseStats.print()
-                nEmployees++
-                if (nEmployees > 20) {
-                    nEmployees = 8
-                    nBuses++
-                    if (nBuses > 10) return
-                }
-                init(nBuses, nEmployees)
-                start(1000)
+            gm.take(nBuses, nEmployees, sm.lowSysTime(), sm.avgSysTime(), sm.uppSysTime())
+            sm.clear()
+            println("done $nBuses $nEmployees")
+            stats.print()
+            startNextConfig()
+        }
+    }
+
+    override fun onStep(stats: Stats) {
+        rm.onStep(stats, nBuses, nEmployees)
+    }
+
+    fun start(busFrom: Int, busTo: Int, emplFrom: Int, emplTo: Int, reps: Int) {
+        if (configs.isNotEmpty() && curRep > 0) return
+        for (b in busFrom..busTo) {
+            for (e in emplFrom..emplTo) {
+                configs.add(Pair(b, e))
             }
         }
-        rm.clear()
+        nReps = reps
+        startNextConfig()
     }
 
-    override fun onStep(stats: IStats) {
-        rm.onStep(stats)
+    private fun startNextConfig() {
+        curRep = 0
+        val conf = configs.poll() ?: return
+        nBuses = conf.first
+        nEmployees = conf.second
+        core.init(daysToSec(30), nBuses, nEmployees)
+        start()
     }
 
-    fun init(nBuses: Int, nEmployees: Int) {
-        this.nBuses = nBuses
-        this.nEmployees = nEmployees
-        nPrint = 0
-        cores.forEach {
-            it.init(daysToSec(30), nBuses, nEmployees)
-        }
-    }
-
-    fun start(reps: Int, confs: List<Pair<Int, Int>>) {
-        configs.addAll(confs)
-        val c = configs.poll()
-        if (c == null) return
-    }
-
-    fun start(reps: Int) {
-        if (nReps.get() > 0) return
-        baseStats.reset()
-        val min = Math.min(nCores, reps)
-        nReps.set(reps - min)
-        for (i in 0 until min) {
-            cores[i].start()
-        }
+    private fun start() {
+        if (curRep > 0) return
+        core.start()
+        curRep++
     }
 
     fun unpause() {
-        cores.forEach {
-            if (it.status == Pauseable.Status.PAUSED) {
-                it.start()
-            }
-        }
+        core.start()
     }
 
     fun pause() {
-        cores.forEach { it.pause() }
+        core.pause()
     }
 
     fun stop() {
-        nReps.set(0)
-        cores.forEach { it.stop() }
+        nReps = 0
+        curRep = 0
+        configs.clear()
+        core.stop()
     }
 }

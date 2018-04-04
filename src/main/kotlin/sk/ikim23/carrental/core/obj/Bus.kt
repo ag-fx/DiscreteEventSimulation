@@ -10,6 +10,7 @@ class Bus(val capacity: Int = 12) {
     private val passengers: Queue<Customer> = LinkedList()
     val id = ID++
     var departure = Double.MAX_VALUE
+    var destination = ""
 
     fun isFull() = passengers.size >= capacity
 
@@ -24,5 +25,5 @@ class Bus(val capacity: Int = 12) {
 
     fun usedCapacity() = passengers.size.toDouble() / capacity
 
-    override fun toString() = "Bus(id=$id, usedCapacity=${passengers.size})"
+    override fun toString() = "Bus(id=$id, usedCapacity=${passengers.size}) on the way to $destination"
 }

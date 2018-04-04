@@ -5,7 +5,9 @@ interface IStats {
     fun customerCount(): Int
     fun avgSysTime(): Double
     fun roundCount(): Int
+    fun lowSysTime(): Double
     fun avgRoundTime(): Double
+    fun uppSysTime(): Double
     fun avgBusUsage(): Double
     fun avgT1QueueSize(): Double
     fun avgT2QueueSize(): Double

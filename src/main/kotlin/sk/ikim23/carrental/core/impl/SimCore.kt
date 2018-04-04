@@ -28,6 +28,7 @@ class SimCore(val listener: ISimListener) : Core() {
     val rentalQueue = StatsQueue<Customer>(this)
     lateinit var serviceDesk: ServiceDesk
     var nBuses = 0
+    val buses = LinkedList<Bus>()
     val stats = Stats(this)
 
     fun customersAreWaiting() = hasTime() || !t1Queue.isEmpty() || !t2Queue.isEmpty()
@@ -51,10 +52,13 @@ class SimCore(val listener: ISimListener) : Core() {
         t2Queue.clear()
         rentalQueue.clear()
         serviceDesk.clear()
+        buses.clear()
         stats.clear()
         // init model
         nBuses.times {
-            addEvent(randArrival(Bus()))
+            val bus = Bus()
+            buses.add(bus)
+            addEvent(randArrival(bus))
         }
         addEvent(CstArrivedOnT1Event(this))
         addEvent(CstArrivedOnT2Event(this))
@@ -62,7 +66,7 @@ class SimCore(val listener: ISimListener) : Core() {
     }
 
     override fun afterDone() {
-        listener.onDone(this, stats)
+        listener.onDone(stats)
     }
 
     private fun randArrival(bus: Bus): Event {

@@ -17,7 +17,7 @@ abstract class Core(val log: Boolean = false) : Pauseable(log), ITime {
 
     override fun beforeStart() {
         curTime = 0.0
-        eventQueue.removeIf { it !is SlowMoEvent }
+        eventQueue.clear()
     }
 
     override fun canTick() = hasTime() || hasEvents()

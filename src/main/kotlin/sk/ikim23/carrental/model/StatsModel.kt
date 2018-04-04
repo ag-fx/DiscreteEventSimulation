@@ -6,7 +6,9 @@ import javafx.beans.property.SimpleIntegerProperty
 import sk.ikim23.carrental.core.impl.IStats
 
 open class StatsModel {
+    val lowSystemTime = SimpleDoubleProperty()
     val avgSystemTime = SimpleDoubleProperty()
+    val uppSystemTime = SimpleDoubleProperty()
     val nUsers = SimpleIntegerProperty()
     val avgRoundTime = SimpleDoubleProperty()
     val nBusRounds = SimpleIntegerProperty()
@@ -19,7 +21,9 @@ open class StatsModel {
     open fun update(stats: IStats) {
         Platform.runLater {
             nUsers.set(stats.customerCount())
+            lowSystemTime.set(stats.lowSysTime())
             avgSystemTime.set(stats.avgSysTime())
+            uppSystemTime.set(stats.uppSysTime())
             nBusRounds.set(stats.roundCount())
             avgRoundTime.set(stats.avgRoundTime())
             avgBusUsage.set(stats.avgBusUsage())
@@ -33,7 +37,9 @@ open class StatsModel {
     open fun clear() {
         Platform.runLater {
             nUsers.set(0)
+            lowSystemTime.set(0.0)
             avgSystemTime.set(0.0)
+            uppSystemTime.set(0.0)
             nBusRounds.set(0)
             avgRoundTime.set(0.0)
             avgBusUsage.set(0.0)

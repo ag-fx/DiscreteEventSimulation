@@ -5,25 +5,18 @@ import sk.ikim23.carrental.core.obj.Customer
 import sk.ikim23.carrental.safeDiv
 
 class Stats(val core: SimCore) : IStats {
-    private var nBuses = 0
-
+    var nBuses = 0
     var nCustomers = 0
     var sumTime = 0.0
     var sumTimeSquare = 0.0
-    private var spread = 0.0
-
-    private var sumRoundTime = 0.0
-    private var sumBusUsage = 0.0
-
+    var sumRoundTime = 0.0
+    var sumBusUsage = 0.0
 
     fun take(customer: Customer) {
         val time = customer.serviceTime - customer.arrivalTime
         sumTime += time
         sumTimeSquare += time * time
         nCustomers++
-
-        val r = sumTime / nCustomers
-        spread = Math.sqrt(sumTimeSquare / nCustomers - r * r)
     }
 
     fun take(bus: Bus) {
@@ -38,6 +31,20 @@ class Stats(val core: SimCore) : IStats {
 
     override fun systemTime() = core.currentTime
     override fun customerCount() = nCustomers
+    override fun lowSysTime(): Double {
+        val w = sumTime / nCustomers
+        val s = Math.sqrt(sumTimeSquare / nCustomers - w * w)
+        val avg = sumTime / nCustomers
+        return avg - 1.96 * s / Math.sqrt((nCustomers - 1).toDouble()) safeDiv 60
+    }
+
+    override fun uppSysTime(): Double {
+        val w = sumTime / nCustomers
+        val s = Math.sqrt(sumTimeSquare / nCustomers - w * w)
+        val avg = sumTime / nCustomers
+        return avg + 1.96 * s / Math.sqrt((nCustomers - 1).toDouble()) safeDiv 60
+    }
+
     override fun avgSysTime() = (sumTime / nCustomers) safeDiv 60
     override fun roundCount() = nBuses
     override fun avgRoundTime() = (sumRoundTime / nBuses) safeDiv 60
